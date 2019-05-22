@@ -188,7 +188,12 @@ detect_codename()
     else
         if [[ -f /etc/debian_version ]]; then
             if [[ -f /etc/os-release ]]; then
-                OSD_CODENAME=$(awk -F"[)(]+" '/VERSION=/ {print $2}' /etc/os-release)
+                TMP_DISTRIBUTION=$(grep '^ID' /etc/os-release | grep -v '^ID_LIKE' | awk -F=  '{ print $2 }')
+                if [[ "${TMP_DISTRIBUTION}" = "ubuntu" ]]; then
+                    OSD_CODENAME=$(grep '^UBUNTU_CODENAME' /etc/os-release | awk -F=  '{ print $2 }')
+                else
+                    OSD_CODENAME=$(awk -F"[)(]+" '/VERSION=/ {print $2}' /etc/os-release)
+                fi
             fi
         elif [[ -f /etc/redhat-release ]]; then
             OSD_CODENAME=$(sed s/.*\(// /etc/redhat-release | sed s/\)//)
